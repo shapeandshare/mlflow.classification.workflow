@@ -1,0 +1,17 @@
+name: mlflow.classification.workflow
+description: MLFlow Classification Workflow
+
+
+channels:
+    - conda-forge
+    - joshburt
+    - defaults
+
+packages:
+    - python=3.10.8
+    - make
+    - mlflow=2.0.1
+    - jupyter=1.0.0
+
+platforms:
+  - linux-64
