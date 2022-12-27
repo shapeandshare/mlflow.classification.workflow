@@ -2,6 +2,9 @@ name: mlflow_classification_workflow
 
 
 entry_points:
+  main:
+    command: "python -m steps.main"
+
   download_raw_data:
     command: "python -m steps.download_raw_data"
 
@@ -10,6 +13,3 @@ entry_points:
 
   train:
     command: "python -m steps.train"
-
-  main:
-    command: "python -m steps.main"

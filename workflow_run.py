@@ -2,7 +2,9 @@ import shlex
 import subprocess
 import sys
 
+from anaconda.enterprise.server.common.sdk import load_ae5_user_secrets
 from dotenv import load_dotenv
+
 
 def launch(shell_out_cmd: str) -> None:
     args = shlex.split(shell_out_cmd)
@@ -15,8 +17,8 @@ def launch(shell_out_cmd: str) -> None:
 
 if __name__ == "__main__":
     # load defined environmental variables
-    load_dotenv(dotenv_path="env/.env.ae5.dev")
     load_ae5_user_secrets()
+    load_dotenv(dotenv_path="env/env.ae5.dev")
 
     cmd: str = "mlflow run . --env-manager local"
     launch(shell_out_cmd=cmd)

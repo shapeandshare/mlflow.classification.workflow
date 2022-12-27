@@ -1,7 +1,7 @@
 import mlflow
+from anaconda.enterprise.mlops.sdk import build_mlflow_client
+from anaconda.enterprise.server.common.sdk import load_ae5_user_secrets
 from dotenv import load_dotenv
-from src.anaconda.ae5.secrets import load_ae5_user_secrets
-from src.anaconda.mlflow.service.factory import build_mlflow_client
 
 
 def execute_step(entry_point: str, parameters: dict):
@@ -33,8 +33,8 @@ def workflow():
 
 if __name__ == "__main__":
     # load defined environmental variables
-    load_dotenv(dotenv_path="env/.env.ae5.dev")
     load_ae5_user_secrets()
+    load_dotenv(dotenv_path="env/env.dev")
 
     # Launch workflow
     workflow()

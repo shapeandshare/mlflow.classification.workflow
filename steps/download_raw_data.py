@@ -8,7 +8,6 @@ from pathlib import Path
 
 import click
 from anaconda.enterprise.server.common.sdk import load_ae5_user_secrets
-
 from dotenv import load_dotenv
 
 

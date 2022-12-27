@@ -9,6 +9,8 @@ import mlflow
 from anaconda.enterprise.server.common.sdk import load_ae5_user_secrets
 from dotenv import load_dotenv
 
+from tools.mnist_decoder import MnistDecoder
+
 
 def launch(shell_out_cmd: str) -> None:
     args = shlex.split(shell_out_cmd)
@@ -38,7 +40,7 @@ def export_images_from_raw_data(input_dir: str, output_dir: str, cache: bool):
 
 if __name__ == "__main__":
     # load defined environmental variables
-    load_dotenv(dotenv_path="env/.env.ae5.dev")
     load_ae5_user_secrets()
+    load_dotenv(dotenv_path="env/env.dev")
 
     export_images_from_raw_data()

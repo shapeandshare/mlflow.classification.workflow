@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Any, Optional
 
+from anaconda.enterprise.server.contracts import BaseModel
 from mnist import MNIST
 from numpy import ndarray
 from PIL import Image

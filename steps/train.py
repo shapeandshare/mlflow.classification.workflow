@@ -4,8 +4,8 @@ import sys
 
 import click
 import mlflow
+from anaconda.enterprise.server.common.sdk import load_ae5_user_secrets
 from dotenv import load_dotenv
-from src.anaconda.ae5.secrets import load_ae5_user_secrets
 
 from steps.training.trainer import Trainer
 
@@ -28,7 +28,7 @@ def train(input_dir: str):
 
 if __name__ == "__main__":
     # load defined environmental variables
-    load_dotenv(dotenv_path="env/.env.ae5.dev")
     load_ae5_user_secrets()
+    load_dotenv(dotenv_path="env/env.dev")
 
     train()
