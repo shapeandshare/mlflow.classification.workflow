@@ -49,4 +49,5 @@ dist/
 src/
 .coverage
 data/
+mlruns/
 

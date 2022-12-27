@@ -7,10 +7,9 @@ import subprocess
 from pathlib import Path
 
 import click
-import mlflow
-from dotenv import load_dotenv
+from anaconda.enterprise.server.common.sdk import load_ae5_user_secrets
 
-from src.anaconda.ae5.secrets import load_ae5_user_secrets
+from dotenv import load_dotenv
 
 
 def shell_out(shell_out_cmd: str, cwd: str) -> tuple[str, str, int]:
@@ -49,7 +48,7 @@ def _download(output_dir: str) -> None:
 
 if __name__ == "__main__":
     # load defined environmental variables
-    load_dotenv(dotenv_path="env/.env.ae5.dev")
     load_ae5_user_secrets()
+    load_dotenv(dotenv_path="env/.env.ae5.dev")
 
     download_raw_data()

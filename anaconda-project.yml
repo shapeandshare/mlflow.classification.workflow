@@ -1,7 +1,6 @@
 name: mlflow.classification.workflow
 description: MLFlow Classification Workflow
 
-
 channels:
     - conda-forge
     - joshburt
@@ -12,6 +11,9 @@ packages:
     - make
     - mlflow=2.0.1
     - jupyter=1.0.0
+    - pip
+    - pip:
+        - python-mnist
 
 platforms:
   - linux-64

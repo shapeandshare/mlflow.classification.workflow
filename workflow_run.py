@@ -4,9 +4,6 @@ import sys
 
 from dotenv import load_dotenv
 
-from src.anaconda.ae5.secrets import load_ae5_user_secrets
-
-
 def launch(shell_out_cmd: str) -> None:
     args = shlex.split(shell_out_cmd)
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

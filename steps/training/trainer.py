@@ -4,12 +4,11 @@ from typing import Tuple
 
 import mlflow
 import tensorflow as tf
+from anaconda.enterprise.server.common.sdk import demand_env_var
+from anaconda.enterprise.server.contracts import BaseModel
+
 from tensorflow import keras
 from tensorflow.keras import layers
-
-from src.anaconda.common.config.environment import demand_env_var
-from src.anaconda.dto.base_model import BaseModel
-from src.anaconda.mlflow.service.factory import build_mlflow_client
 
 IMAGE_HEIGHT: int = 28
 IMAGE_WIDTH: int = 28

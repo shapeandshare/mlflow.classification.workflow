@@ -6,10 +6,8 @@ from pathlib import Path
 
 import click
 import mlflow
+from anaconda.enterprise.server.common.sdk import load_ae5_user_secrets
 from dotenv import load_dotenv
-
-from src.anaconda.ae5.secrets import load_ae5_user_secrets
-from tools.mnist_decoder import MnistDecoder
 
 
 def launch(shell_out_cmd: str) -> None:
