@@ -18,7 +18,7 @@ def launch(shell_out_cmd: str) -> None:
 if __name__ == "__main__":
     # load defined environmental variables
     load_ae5_user_secrets()
-    load_dotenv(dotenv_path="env/env.ae5.dev")
+    load_dotenv(dotenv_path="env/env.dev")
 
     cmd: str = "mlflow run . --env-manager local"
     launch(shell_out_cmd=cmd)

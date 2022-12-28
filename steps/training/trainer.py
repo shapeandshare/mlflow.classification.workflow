@@ -6,6 +6,7 @@ import mlflow
 import tensorflow as tf
 from anaconda.enterprise.server.common.sdk import demand_env_var
 from anaconda.enterprise.server.contracts import BaseModel
+from keras import Model
 from tensorflow import keras
 from tensorflow.keras import layers
 
@@ -86,7 +87,7 @@ class Trainer(BaseModel):
         return train_ds_prefetch, val_ds_prefetch, class_names, data_split, shuffle_seed
         # return train_ds, val_ds, class_names, data_split, shuffle_seed
 
-    def build_model(self, num_classes: int) -> keras.Model:
+    def build_model(self, num_classes: int) -> Model:
         # model input
         inputs = keras.Input(shape=(IMAGE_HEIGHT, IMAGE_WIDTH, 3), name="inputs")
 
@@ -126,7 +127,7 @@ class Trainer(BaseModel):
         outputs = layers.Dense(num_classes)(model_end_layer_2)
 
         # build the model
-        model: keras.Model = keras.Model(inputs=inputs, outputs=outputs)
+        model: Model = keras.Model(inputs=inputs, outputs=outputs)
 
         # compile the model
         model.compile(
@@ -155,8 +156,28 @@ class Trainer(BaseModel):
         print(f"Shuffle Seed: {shuffle_seed}")
 
         # Build Model
-        my_model = self.build_model(num_classes)
+        my_model: Model = self.build_model(num_classes)
 
         # Train Model
-        mlflow.tensorflow.autolog(registered_model_name=demand_env_var(name="MLFLOW_REGISTERED_MODEL_NAME"))
+        mlflow.tensorflow.autolog(registered_model_name=demand_env_var(name="MLFLOW_REGISTERED_MODEL_NAME_TRAINING"), log_models=False)
         trained_model, history = self.train(my_model, train_ds, val_ds)
+
+        # Generate inference time model
+        prediction_model: Model = self.generate_inference_model(trained_model=trained_model)
+
+        mlflow.tensorflow.log_model(
+            model=prediction_model, registered_model_name=demand_env_var(name="MLFLOW_REGISTERED_MODEL_NAME_INFERENCE"), artifact_path="model"
+        )
+        mlflow.log_param(key="class_names", value=class_names)
+        mlflow.log_param(key="shuffle_seed", value=shuffle_seed)
+
+    def generate_inference_model(self, trained_model: Model) -> Model:
+        new_inputs = tf.keras.Input(shape=(IMAGE_HEIGHT, IMAGE_WIDTH, 3), name="inputs")
+        all_layers = [l for l in trained_model.layers[4:]]
+
+        x = new_inputs
+        for layer in all_layers:
+            # Re-construct the model one layer at a time
+            x = layer(x)
+
+        return tf.keras.Model(inputs=new_inputs, outputs=x)

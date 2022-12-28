@@ -23,7 +23,7 @@ def launch(shell_out_cmd: str) -> None:
 @click.option("--input-dir", default="data/etl/train", type=str)
 def train(input_dir: str):
     with mlflow.start_run(nested=True) as mlrun:
-        Trainer().execute(input_dir)
+        Trainer().execute(data_dir=input_dir)
 
 
 if __name__ == "__main__":
