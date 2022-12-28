@@ -21,7 +21,7 @@ def workflow():
         execute_step(entry_point="export_images_from_raw_data", parameters=etl_parameters)
 
         # train
-        train_parameters: dict = {"input-dir": "data/etl/train"}
+        train_parameters: dict = {"input-dir": "data/etl/train", "epochs": 50, "early-stop-patience": 10}
         execute_step(entry_point="train", parameters=train_parameters)
 
         # evaluate

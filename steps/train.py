@@ -21,9 +21,11 @@ def launch(shell_out_cmd: str) -> None:
 
 @click.command()
 @click.option("--input-dir", default="data/etl/train", type=str)
-def train(input_dir: str):
+@click.option("--epochs", default=1, type=int)
+@click.option("--early-stop-patience", default=10, type=int)
+def train(input_dir: str, epochs: int, early_stop_patience: int):
     with mlflow.start_run(nested=True) as mlrun:
-        Trainer().execute(data_dir=input_dir)
+        Trainer().execute(data_dir=input_dir, epochs=epochs, early_stop_patience=early_stop_patience)
 
 
 if __name__ == "__main__":
