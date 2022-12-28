@@ -138,16 +138,13 @@ class Trainer(BaseModel):
 
         return model
 
-    def train(self, model, train_ds, val_ds):
+    def train(self, model, train_ds, val_ds, epochs: int = 1, early_stop_patience: int = 10):
         # train model
-        epochs: int = 1
-        # early_stop = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=5)
-        early_stop = tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=10)
+        early_stop = tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=early_stop_patience)
         history = model.fit(train_ds, validation_data=val_ds, epochs=epochs, callbacks=[early_stop])
-
         return model, history
 
-    def execute(self, data_dir: str):
+    def execute(self, data_dir: str, epochs: int = 1, early_stop_patience: int = 10) -> None:
         # Load Training Data
         train_ds, val_ds, class_names, data_split, shuffle_seed = self.load_datasets(data_dir=Path(data_dir))
         num_classes = len(class_names)
@@ -158,20 +155,34 @@ class Trainer(BaseModel):
         # Build Model
         my_model: Model = self.build_model(num_classes)
 
+        # Enable auto logger (mlflow)
+        mlflow.tensorflow.autolog(log_models=False)
+
         # Train Model
-        mlflow.tensorflow.autolog(registered_model_name=demand_env_var(name="MLFLOW_REGISTERED_MODEL_NAME_TRAINING"), log_models=False)
-        trained_model, history = self.train(my_model, train_ds, val_ds)
+        trained_model, history = self.train(
+            model=my_model, train_ds=train_ds, val_ds=val_ds, epochs=epochs, early_stop_patience=early_stop_patience
+        )
 
         # Generate inference time model
-        prediction_model: Model = self.generate_inference_model(trained_model=trained_model)
+        prediction_model: Model = Trainer.generate_prediction_model(trained_model=trained_model)
 
-        mlflow.tensorflow.log_model(
-            model=prediction_model, registered_model_name=demand_env_var(name="MLFLOW_REGISTERED_MODEL_NAME_INFERENCE"), artifact_path="model"
-        )
-        mlflow.log_param(key="class_names", value=class_names)
+        # Log final results
+
+        # https://stackoverflow.com/questions/41665799/keras-model-summary-object-to-string
+        summary_list: list[str] = []
+        prediction_model.summary(print_fn=lambda x: summary_list.append(x))
+        mlflow.log_text(text="\n".join(summary_list), artifact_file="inference_model_summary.txt")
+
+        mlflow.log_dict(dictionary={"classes": class_names}, artifact_file="classes.json")
         mlflow.log_param(key="shuffle_seed", value=shuffle_seed)
+        mlflow.tensorflow.log_model(
+            model=prediction_model,
+            registered_model_name=demand_env_var(name="MLFLOW_REGISTERED_MODEL_NAME"),
+            artifact_path="model",
+        )
 
-    def generate_inference_model(self, trained_model: Model) -> Model:
+    @staticmethod
+    def generate_prediction_model(trained_model: Model) -> Model:
         new_inputs = tf.keras.Input(shape=(IMAGE_HEIGHT, IMAGE_WIDTH, 3), name="inputs")
         all_layers = [l for l in trained_model.layers[4:]]
 

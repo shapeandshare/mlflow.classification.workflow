@@ -26,10 +26,6 @@ def workflow():
 
         # evaluate
 
-        # store model
-
-        # promote (model stage?) [optional]
-
 
 if __name__ == "__main__":
     # load defined environmental variables
